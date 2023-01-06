@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +10,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using ProiectFinal.Models;
+using ProiectFinal.Models.Constants;
+using ProiectFinal.Repositories;
+using ProiectFinal.Services.UserServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,10 +38,29 @@ namespace ProiectFinal
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProiectFinal", Version = "v1" });
             });
+
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(UserRoleType.Admin, policy => policy.RequireRole(UserRoleType.Admin));
+                options.AddPolicy(UserRoleType.User, policy => policy.RequireRole(UserRoleType.User));
+            }
+                );
+
+            services.AddAuthentication(auth =>
+            {
+                auth.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                auth.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer();
+
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseSqlServer("Data Source=DESKTOP-LRCPFES;Initial Catalog=FinalDataBase;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
             });
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
