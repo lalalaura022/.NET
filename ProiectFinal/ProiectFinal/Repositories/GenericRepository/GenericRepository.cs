@@ -1,19 +1,22 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ProiectFinal.Models;
+﻿using ProiectFinal.Models;
+using Microsoft.EntityFrameworkCore;
+using ProiectFinal.Repositories;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
+using ProiectFinal.data;
 
-namespace ProiectFinal.Repositories
+namespace ProiectFinal.Repositories.GenericRepository
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
-        protected readonly AppDbContext _context;
-        public GenericRepository(AppDbContext context)
+        protected readonly Context _context;
+        public GenericRepository(Context context)
         {
             _context = context;
         }
+
         public void Create(TEntity entity)
         {
             _context.Set<TEntity>().Add(entity);
@@ -42,7 +45,6 @@ namespace ProiectFinal.Repositories
         public async Task<TEntity> GetByIdAsync(int id)
         {
             return await _context.Set<TEntity>().FindAsync(id);
-
         }
 
         public async Task<bool> SaveAsync()

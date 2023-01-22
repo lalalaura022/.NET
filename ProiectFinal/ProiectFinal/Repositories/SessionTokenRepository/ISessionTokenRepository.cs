@@ -7,10 +7,8 @@ using System.Threading.Tasks;
 
 namespace ProiectFinal.Repositories
 {
-    public interface IUserRepository : IGenericRepository<User>
+    public interface ISessionTokenRepository : IGenericRepository<SessionToken>
     {
-        Task<List<User>> GetAllUsers();
-        Task<User> GetUserByEmail(string email);
-        Task<User> GetByIdWithRoles(int id);
+        Task<SessionToken> GetByJTI(string jti);
     }
 }
